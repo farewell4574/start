@@ -11,6 +11,21 @@ git add README.md
 git commit -m "first commit"
 "first commit"注释
 
+
+git status 查看仓库状态
+如果有文件被修改过，git diff file查看修改内容
+
+提交都是两步：
+git add
+git commit
+
+查看历史记录：
+git log
+git log --pretty=oneline
+其中 commit id 是 sha1 算出来的数字
+可以用可视化工具查看
+
+
 连接远程github
 git remote add origin https://github.com/<your_username>/Demo.git
 允许 GitHub.com 和 Git 仓库交互时使用 origin 这个名称而不是完整的 Git 地址
