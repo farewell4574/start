@@ -19,11 +19,25 @@ git status 查看仓库状态
 git add
 git commit
 
-查看历史记录：
+查看提交历史：
 git log
+查看命令历史：
+git reflog
+简化查看提交历史的信息：
 git log --pretty=oneline
 其中 commit id 是 sha1 算出来的数字
 可以用可视化工具查看
+
+
+HEAD 当前版本
+HEAD^ 上一个版本
+HEAD^^ 上上一个版本
+HEAD~100 上100个版本
+格式：
+git reset --hard commit_id
+git reset --hard HEAD^ 回到上一个版本
+git reset --hard 3628164 回到指定版本（版本号不用写全）
+git reflog 记录每一次命令，可以看到commit id（版本号）
 
 
 连接远程github
