@@ -39,6 +39,14 @@ git reset --hard HEAD^ 回到上一个版本
 git reset --hard 3628164 回到指定版本（版本号不用写全）
 git reflog 记录每一次命令，可以看到commit id（版本号）
 
+add时已经更新暂存区stage
+暂存区的东西才是要commit的
+有了暂存区的概念：
+（1）才不至于把所有文件都commit，可以选择性commit；
+（2）购物车概念，可以checkout单独还原某个文件（还原到哪个版本？）
+git diff    #是工作区(work dict)和暂存区(stage)的比较
+git diff --cached    #是暂存区(stage)和分支(master)的比较
+
 
 连接远程github
 git remote add origin https://github.com/<your_username>/Demo.git
@@ -50,3 +58,6 @@ $ git config --global user.name "Your Name"
 $ git config --global user.email "email@example.com"
 自报家门
 --global全局配置，但还是可以对某一项单独指定配置
+
+好像 -m 支持全角符号？还会自动不全引号（如果不小心没有打全引号）。
+git commit -m “添加测试文件”
