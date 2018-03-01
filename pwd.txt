@@ -1,0 +1,2 @@
+Your identification has been saved in /c/Users/User/.ssh/id_rsa.
+Your public key has been saved in /c/Users/User/.ssh/id_rsa.pub.
