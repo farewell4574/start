@@ -48,11 +48,32 @@ git diff    #是工作区(work dict)和暂存区(stage)的比较
 git diff --cached    #是暂存区(stage)和分支(master)的比较
 git diff HEAD -- readme.txt命令可以查看工作区和版本库里面最新版本的区别
 
+git reset HEAD file 可以把暂存区的修改撤销掉（unstage），暂存区回到HEAD版本
+git checkout -- file 丢弃工作区的修改，回到暂存区版本
+
+删除文件
+git rm
+git commit
+撤销删除
+git checkout -- 
+
 连接远程github
 git remote add origin https://github.com/<your_username>/Demo.git
 允许 GitHub.com 和 Git 仓库交互时使用 origin 这个名称而不是完整的 Git 地址
+格式：
+git remote add origin git@server-name:path/repo-name.git
+我的：
+git remote add origin git@github.com:farewell4574/start.git
+git remote add origin https://github.com/farewell4574/start.git
 
 git push -u origin master
+把当前分支master推送到远程
+-u参数，把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令：
+git push origin master
+
+使用https除了速度慢以外，每次推送都必须输入口令
+
+克隆下来的仓库，似乎不用设置，默认名字就是origin
 -------------------------------------------
 $ git config --global user.name "Your Name"
 $ git config --global user.email "email@example.com"
@@ -61,3 +82,77 @@ $ git config --global user.email "email@example.com"
 
 好像 -m 支持全角符号？还会自动不全引号（如果不小心没有打全引号）。
 git commit -m “添加测试文件”
+
+建SSH Key。
+ubuntu:在用户主目录~下，.sshid_rsa和id_rsa.pub
+创建key：
+Shell（Windows下打开Git Bash）：
+$ ssh-keygen -t rsa -C "youremail@example.com"
+
+在github的setting中粘贴pub的内容
+----------------------------------------------
+HEAD指向当前分支。
+HEAD指向那里，表示当前分支在哪里，例如指向master。
+在master的当前位置创建分支节点（实际是一个名为dev的指针）
+git checkout -b dev
+可正常add和commit
+-b表示创建并切换，相当于：
+$ git branch dev
+$ git checkout dev
+git branch 列出当前分支
+git checkout master 切回master
+git merge dev 合并dev
+git merge命令用于合并指定分支到当前分支
+git branch -d dev 删除dev分支，实际是删除dev指针，所以很快
+查看分支：git branch
+创建分支：git branch <name>
+切换分支：git checkout <name>
+创建+切换分支：git checkout -b <name>
+合并某分支到当前分支：git merge <name>
+删除分支：git branch -d <name>
+
+当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。
+用git log --graph命令可以看到分支合并图：
+git log --graph --pretty=oneline --abbrev-commit
+例如：
+git merge feature1
+发现冲突，提示失败。这个时候git会自动修改冲突的文件：Merge conflict in <file>
+git status 也可以看到冲突的文件（已经被修改）
+查看文件，可以看到：
+Git用<<<<<<<，=======，>>>>>>>标记出不同分支的内容，例如：
+<<<<<<< HEAD
+Creating a new branch is quick & simple.
+=======
+Creating a new branch is quick AND simple.
+>>>>>>> feature1
+手动修改，add,commit，然后 branch -d
+
+分支管理策略：
+创建分支，正常add，commit
+切换到master，merge 使用--no-ff参数，表示禁用 Fast forward（快速合并），这个merge由于要自动在master创建commit，因此使用-m参数
+例如：
+git merge --no-ff -m "merge with no-ff" dev
+合并分支时，加上--no-ff参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，而fast forward合并就看不出来曾经做过合并
+策略：
+master分支应该是稳定版，仅用来发布新版本，平时不在上面干活；
+干活都在dev分支上，也就是说，dev分支是不稳定的，稳定时再把dev分支合并到master上发布版本；
+团队每个人都有自己的分支，往dev分支上合并。
+
+
+在某个dev分支上工作时，遇到另外的问题需要解决，例如修复master上的某个bug，这个时候需要在master创建新的bug分支进行修复（然后合并且删除bug分支）。但正在工作的dev分支不能提交（代码有问题会影响其他人），这个时候：
+把工作现场git stash一下，然后去修复bug，修复后，再git stash pop，回到工作现场，stash可暂存多个工作现场，但不提交。
+git checkout dev 之后，git status看到现场是干净的，git stash list可以看到现场内容的存储情况，例如：
+git stash list
+stash@{0}: WIP on dev: 6224937 add merge
+可以：
+git stash pop
+等于两个命令：
+git stash apply + git stash drop
+多个stash时，可以指定stash，例如：
+git stash apply stash@{0}
+pop估计是弹出最后一个，FIFO
+
+
+---------------------------------------------
+自己搭建一个Git服务器
+
