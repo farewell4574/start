@@ -110,6 +110,8 @@ git branch -d dev 删除dev分支，实际是删除dev指针，所以很快
 创建+切换分支：git checkout -b <name>
 合并某分支到当前分支：git merge <name>
 删除分支：git branch -d <name>
+删除没有被合并过的分支，可以通过git branch -D <name>强行删除。
+
 
 当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。
 用git log --graph命令可以看到分支合并图：
@@ -152,6 +154,54 @@ git stash apply + git stash drop
 git stash apply stash@{0}
 pop估计是弹出最后一个，FIFO
 
+------------------------
+远程和多人协作
+git remote
+git remote -v
+查看远程仓库，显示可以抓取和推送的origin的地址。
+如果没有推送权限，就看不到push的地址
+
+推送时要指定本地分支，Git就会把该分支推送到远程库对应的远程分支上。
+git push origin master 推送master
+git push origin dev 推送dev
+
+其他人远程clone时，默认是clone master，然后建立自己的本地dev
+git checkout -b dev origin/dev 这个命令直接建立了和远程dev的链接关系
+他在推送dev或者其他人推送dev时，有可能冲突，这个时候需要pull远程進行合并（git会提示冲突）
+由于没有指定本地dev分支与远程origin/dev分支的链接，这个时候直接pull有两种提示：
+git pull <remote> <branch>
+git branch --set-upstream dev origin/<branch>
+一般用第二种，然后git pull，会提示哪个文件冲突，解决冲突，手动commit，push
+
+
+多人模式：
+1、试图用git push origin branch-name推送自己的修改；
+2、如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；
+3、如果提示“no tracking information”，说明本地分支和远程分支的链接关系没有创建，用命令git branch --set-upstream branch-name origin/branch-name。
+4、如果合并有冲突，则解决冲突，并在本地提交；
+5、没有冲突或者解决掉冲突后，再用git push origin branch-name推送
+6、应该来说，可以直接git pull origin branch-name来克隆远程branch-name分支，只不过都从master开始并处理冲突才不乱，因为master应该是一个稳定可用的版本。所以，以下3种方式应该都可以创建对应远程的分支：
+（1）git pull origin branch-name #直接抓取远程指定分支，如果clone，就专指master
+（2）git checkout -b branch-name origin/branch-name #从本地master开始建立分支并对应远程同名分支，不同名自己也会忘
+（3）git branch --set-upstream branch-name origin/branch-name #设定本地当前分支和远程分支的对应关系，然后pull，解决冲突，commit，push
+
+------------------------
+标签是不能移动的指针，指向某次commit，跟分支的区别是不能移动，通常用于标示版本
+git tag <name> #把标签打到当前分支的最新commit上，也就是HEAD，例如：
+git tag v1.0
+git tag #查看所有标签，标签会按字母排序，而不是时间
+git show <tagname> #查看标签信息
+git log --pretty=oneline --abbrev-commit #查看历史commit id
+git tag v0.9 commit_id #对之前的commit打标签
+带有说明的标签，-a指定标签名，-m指定说明文字：
+git tag -a v0.1 -m "version 0.1 released" 3628164
+-s用私钥签名一个标签，必须首先安装gpg（GnuPG）：
+git tag -s v0.2 -m "signed version 0.2 released" fec145a
+
+命令git tag <name>用于新建一个标签，默认为HEAD，也可以指定一个commit id；
+git tag -a <tagname> -m "blablabla..."可以指定标签信息；
+git tag -s <tagname> -m "blablabla..."可以用PGP签名标签；
+命令git tag可以查看所有标签。
 
 ---------------------------------------------
 自己搭建一个Git服务器
